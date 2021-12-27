@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.notesapp.database.Note
 import com.example.notesapp.databinding.NoteRowBinding
 
-class NotesAdapter(val notes: ArrayList<Note>): RecyclerView.Adapter<NotesAdapter.NotesViewHolder>(){
+class NotesAdapter(private var notes: ArrayList<Note>): RecyclerView.Adapter<NotesAdapter.NotesViewHolder>(){
     class NotesViewHolder(val binding: NoteRowBinding): RecyclerView.ViewHolder(binding.root) {
 
     }
@@ -17,7 +17,16 @@ class NotesAdapter(val notes: ArrayList<Note>): RecyclerView.Adapter<NotesAdapte
 
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
         val note = notes[position]
+
+        holder.binding.apply {
+            noteTV.text = note.noteText
+        }
     }
 
     override fun getItemCount() = notes.size
+
+    fun updateNotes(userNotes: ArrayList<Note>) {
+        this.notes = userNotes
+        notifyDataSetChanged()
+    }
 }

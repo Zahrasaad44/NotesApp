@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="#302F2F">
 
     <LinearLayout
         android:id="@+id/userInputLL"
@@ -22,6 +23,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
+            android:padding="15dp"
+            android:background="@drawable/add_btn"
             android:hint="Add note..."
             android:inputType="textPersonName"
             android:minHeight="48dp" />
@@ -35,7 +38,9 @@
             android:text="Add" />
     </LinearLayout>
 
+
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/notesRV"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/userInputLL"
