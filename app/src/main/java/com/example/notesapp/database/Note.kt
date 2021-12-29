@@ -1,3 +1,3 @@
 package com.example.notesapp.database
 
-data class Note(val pk: Int, val noteText: String)
+data class Note(var pk: Int, val noteText: String)

@@ -3,6 +3,7 @@ package com.example.notesapp.database
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
@@ -27,27 +28,49 @@ class DatabaseHelper(context: Context): SQLiteOpenHelper(context, "details.db", 
         contentValues.put("NoteText", text)
         // ContentValues "put"s a Key_Value pair. The "Key" must match the attributes of the DB (line 13)
         // if there are other attributes (columns) in the DB, I need to "put" their values in contentValues too.
+        // There is no need to pass the pk because it's automatically generated
         sqLiteDatabase.insert("notes", null, contentValues)
         // "nullColumnHack" is used when I need to enter a null value of a specific column
     }
 
     fun readData(): ArrayList<Note> {
         val notes = arrayListOf<Note>()
-        // Cursor used to read (retrieve) data from SQLite
-        val cursor: Cursor = sqLiteDatabase.rawQuery("SELECT * FROM notes", null)
-        // "selectionArgs" is to filter the data we get
+        var cursor: Cursor? = null
+        try {
+            cursor = sqLiteDatabase.rawQuery("SELECT * FROM notes", null)
+            // "selectionArgs" is to filter the data we get
+        } catch (e: SQLException) {
+            sqLiteDatabase.execSQL("SELECT * FROM notes")
+            return ArrayList()
+        }
 
-        if(cursor.count < 1) { //To handle empty table
-            println("No Data Found")
-        } else {
-            while (cursor.moveToNext()) { //Iterate through the table and populate notes ArrayList
-                val pk = cursor.getInt(0)// The integer value refers to column index (it's same order of its creation, line 14)
+        if (cursor.moveToFirst()) {
+            do {
+                val pk =
+                    cursor.getInt(0)// The integer value refers to column index (it's same order of its creation, line 14)
                 val noteText = cursor.getString(1)
                 notes.add(Note(pk, noteText))
-
-            }
+            } while (cursor.moveToNext())  //Iterate through the table and populate notes ArrayList
         }
         return notes
+    }
+
+
+    fun updateDate(note: Note): Int {
+        val contentValues = ContentValues()
+        contentValues.put("NoteText", note.noteText)
+        //sqLiteDatabase.close()
+        return sqLiteDatabase.update("notes", contentValues, "pk = ${note.pk}", null)
+        // if the return > 0 means it worked
+        // It returns number of rows
+    }
+
+    fun deleteData(note: Note): Int {
+        val contentValues = ContentValues()
+        contentValues.put("pk", note.pk)
+        //sqLiteDatabase.close()
+        return sqLiteDatabase.delete("notes", "pk = ${note.pk}", null)
+
     }
 }
 
@@ -63,4 +86,6 @@ It requires:
 
 ContentValues is to group data and pass it into the DB instead of passing evey single data individually . To populate table's
 columns with data.
+
+ Cursor used to read (retrieve) data from SQLite
  */
